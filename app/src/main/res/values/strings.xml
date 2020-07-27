@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">GpsApp - UbiTransports</string>
+
+    <string name="activity_main_dialog_positive_btn">Allow</string>
+    <string name="activity_main_dialog_negative_btn">Deny</string>
+    <string name="activity_main_permission_granted_msg">Permission granted, can run</string>
+    <string name="activity_main_permission_denied_msg">You have denied access to location on your device</string>
+    <string name="activity_main_never_ask_permission_msg">You have permanently denied access to location on your device</string>
+    <string name="activity_main_img_perm_status_content_desc">Permission is granted or not</string>
 </resources>
