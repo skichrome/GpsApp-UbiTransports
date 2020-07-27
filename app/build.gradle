@@ -45,4 +45,7 @@ dependencies {
     // Permissions
     implementation "org.permissionsdispatcher:permissionsdispatcher:4.7.0"
     annotationProcessor "org.permissionsdispatcher:permissionsdispatcher-processor:4.7.0"
+
+    // Play Services - Location
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
 }
