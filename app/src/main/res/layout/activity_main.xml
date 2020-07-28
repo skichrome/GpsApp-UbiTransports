@@ -8,27 +8,34 @@
     android:layout_height="match_parent"
     tools:context=".view.MainActivity">
 
-    <TextView
-        android:id="@+id/activity_main_speed_text"
-        style="@style/TextAppearance.AppCompat.Body1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
+    <View
+        android:id="@+id/activity_main_speed_bar"
+        android:layout_width="1dp"
+        android:layout_height="50dp"
+        android:layout_margin="16dp"
+        android:background="@color/secondaryColor"
+        android:maxWidth="200dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Speed : XXX.XX" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/activity_main_logs_text"
+    <ScrollView
+        android:id="@+id/activity_main_logs_scroll_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="16dp"
-        android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/activity_main_permission_info_img"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/activity_main_speed_text" />
+        app:layout_constraintTop_toBottomOf="@+id/activity_main_speed_bar">
+
+        <TextView
+            android:id="@+id/activity_main_logs_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical" />
+    </ScrollView>
 
     <ImageView
         android:id="@+id/activity_main_permission_info_img"

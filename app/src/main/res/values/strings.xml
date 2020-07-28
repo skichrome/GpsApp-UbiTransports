@@ -8,5 +8,5 @@
     <string name="activity_main_never_ask_permission_msg">You have permanently denied access to location on your device</string>
     <string name="activity_main_img_perm_status_content_desc">Permission is granted or not</string>
 
-    <string name="activity_main_speed_text">Current speed : %1f1</string>
+    <string name="activity_main_speed_text">Current speed : %1d km/h</string>
 </resources>

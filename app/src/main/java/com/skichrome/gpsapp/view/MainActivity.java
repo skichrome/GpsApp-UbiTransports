@@ -5,7 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.os.Looper;
-import android.text.method.ScrollingMovementMethod;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         restoreValuesInBundle(savedInstanceState);
-        configureUI();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         MainActivityPermissionsDispatcher.beginLocationUpdatesWithPermissionCheck(this);
     }
@@ -107,9 +106,9 @@ public class MainActivity extends AppCompatActivity
             canLaunchRequestLocation = state.getBoolean(LOCATION_UPDATES_STATE_KEY, false);
     }
 
-    private void configureUI()
+    private void updateUI(int percent)
     {
-        binding.activityMainLogsText.setMovementMethod(new ScrollingMovementMethod());
+        binding.activityMainSpeedBar.getLayoutParams().width = percent;
     }
 
     @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -121,16 +120,25 @@ public class MainActivity extends AppCompatActivity
         locationCallback = new LocationCallback()
         {
             private int count = 0;
+
             @Override
             public void onLocationResult(LocationResult locationResult)
             {
                 if (locationResult == null)
                     return;
 
-                float speed = locationResult.getLastLocation().getSpeed();
-                binding.activityMainSpeedText.setText(getString(R.string.activity_main_speed_text, speed));
-                binding.activityMainLogsText.append(++count + ". " + getString(R.string.activity_main_speed_text, speed) + "\n");
-                ExtensionsKt.errorLog(MainActivity.this, "onLocationResult: " + speed, null);
+                float speed = locationResult.getLastLocation().getSpeed() * 3.6f;
+                int intSpeed = Math.round(speed);
+                if (intSpeed <= 100 && intSpeed > 0)
+                    updateUI(intSpeed);
+                if (intSpeed > 100)
+                    updateUI(100);
+                if (intSpeed <= 0)
+                    updateUI(1);
+
+                binding.activityMainLogsText.append(++count + ". " + getString(R.string.activity_main_speed_text, Math.round(speed)) + "\n");
+                binding.activityMainLogsScrollView.fullScroll(View.FOCUS_DOWN);
+                ExtensionsKt.errorLog(MainActivity.this, "onLocationResult: " + speed + " km/h (=>" + intSpeed + ")", null);
                 super.onLocationResult(locationResult);
             }
         };
