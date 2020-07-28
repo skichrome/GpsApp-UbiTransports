@@ -2,9 +2,12 @@ package com.skichrome.gpsapp.view;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.IntentSender;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.Settings;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -19,6 +22,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
+import com.skichrome.gpsapp.BuildConfig;
 import com.skichrome.gpsapp.R;
 import com.skichrome.gpsapp.databinding.ActivityMainBinding;
 import com.skichrome.gpsapp.util.ExtensionsKt;
@@ -40,11 +44,10 @@ public class MainActivity extends AppCompatActivity
     private ActivityMainBinding binding;
 
     private static final int UPDATE_INTERVAL_MILLIS = 1000;
-    private static final int FAsTEST_UPDATE_INTERVAL = UPDATE_INTERVAL_MILLIS / 2;
+    private static final int FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL_MILLIS / 2;
+    private static final int SLOWEST_UPDATE_INTERVAL = UPDATE_INTERVAL_MILLIS * 2;
     private static final int REQUEST_CHECK_SETTINGS = 1234;
-    private static final String LOCATION_UPDATES_STATE_KEY = "location_updates_request_are_enabled";
 
-    private boolean canLaunchRequestLocation;
     private LocationRequest request;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
@@ -59,9 +62,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        restoreValuesInBundle(savedInstanceState);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        MainActivityPermissionsDispatcher.beginLocationUpdatesWithPermissionCheck(this);
     }
 
     @Override
@@ -72,11 +73,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResume()
+    protected void onStart()
     {
-        super.onResume();
-        if (canLaunchRequestLocation)
-            MainActivityPermissionsDispatcher.beginLocationUpdatesWithPermissionCheck(this);
+        super.onStart();
+        MainActivityPermissionsDispatcher.beginLocationUpdatesWithPermissionCheck(this);
     }
 
     @Override
@@ -86,87 +86,15 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState)
-    {
-        outState.putBoolean(LOCATION_UPDATES_STATE_KEY, canLaunchRequestLocation);
-        super.onSaveInstanceState(outState);
-    }
-
     // =================================
     //              Methods
     // =================================
 
-    private void restoreValuesInBundle(Bundle state)
-    {
-        if (state == null)
-            return;
-
-        if (state.keySet().contains(LOCATION_UPDATES_STATE_KEY))
-            canLaunchRequestLocation = state.getBoolean(LOCATION_UPDATES_STATE_KEY, false);
-    }
+    // --- UI & configuration --- //
 
     private void updateUI(int percent)
     {
         binding.activityMainSpeedBar.getLayoutParams().width = percent;
-    }
-
-    @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-    void beginLocationUpdates()
-    {
-        ExtensionsKt.shortToast(MainActivity.this, R.string.activity_main_permission_granted_msg);
-        configurePermissionStatusImg(true);
-
-        locationCallback = new LocationCallback()
-        {
-            private int count = 0;
-
-            @Override
-            public void onLocationResult(LocationResult locationResult)
-            {
-                if (locationResult == null)
-                    return;
-
-                float speed = locationResult.getLastLocation().getSpeed() * 3.6f;
-                int intSpeed = Math.round(speed);
-                if (intSpeed <= 100 && intSpeed > 0)
-                    updateUI(intSpeed);
-                if (intSpeed > 100)
-                    updateUI(100);
-                if (intSpeed <= 0)
-                    updateUI(1);
-
-                binding.activityMainLogsText.append(++count + ". " + getString(R.string.activity_main_speed_text, Math.round(speed)) + "\n");
-                binding.activityMainLogsScrollView.fullScroll(View.FOCUS_DOWN);
-                ExtensionsKt.errorLog(MainActivity.this, "onLocationResult: " + speed + " km/h (=>" + intSpeed + ")", null);
-                super.onLocationResult(locationResult);
-            }
-        };
-
-        configureLocationRequest();
-        checkIfLocationSettingIsEnabled();
-    }
-
-    @OnShowRationale(Manifest.permission.ACCESS_FINE_LOCATION)
-    void showLocationRationale(final PermissionRequest request)
-    {
-        new AlertDialog.Builder(this)
-                .setMessage("To use this app you must grant location access")
-                .setPositiveButton(R.string.activity_main_dialog_positive_btn, (dialog, button) -> request.proceed())
-                .setNegativeButton(R.string.activity_main_dialog_negative_btn, (dialog, button) -> request.cancel())
-                .show();
-    }
-
-    @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
-    void onPermissionDenied()
-    {
-        configurePermissionStatusImg(false);
-    }
-
-    @OnNeverAskAgain(Manifest.permission.ACCESS_FINE_LOCATION)
-    void onNeverAskPermission()
-    {
-        configurePermissionStatusImg(null);
     }
 
     private void configurePermissionStatusImg(Boolean isLocationGranted)
@@ -184,13 +112,82 @@ public class MainActivity extends AppCompatActivity
         binding.activityMainPermissionInfoText.setText(textReference);
     }
 
-    // --- Location --- //
+    private void askToGoToSettings()
+    {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+        intent.setData(uri);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    // --- Permissions-linked methods --- //
+
+    @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+    void beginLocationUpdates()
+    {
+        configureLocationCallback();
+        configurePermissionStatusImg(true);
+        configureLocationRequest();
+        checkIfLocationSettingIsEnabled();
+    }
+
+    @OnShowRationale(Manifest.permission.ACCESS_FINE_LOCATION)
+    void showLocationRationale(final PermissionRequest request)
+    {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.activity_main_dialog_show_perm_request_title)
+                .setMessage(R.string.activity_main_dialog_show_perm_request_message)
+                .setPositiveButton(R.string.activity_main_dialog_show_perm_request_positive_btn, ((dialogInterface, i) -> request.proceed()))
+                .setNegativeButton(R.string.activity_main_dialog_show_perm_request_negative_btn, ((dialogInterface, i) -> request.cancel()))
+                .show();
+    }
+
+    @OnPermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)
+    void onPermissionDenied()
+    {
+        configurePermissionStatusImg(false);
+    }
+
+    @OnNeverAskAgain(Manifest.permission.ACCESS_FINE_LOCATION)
+    void onNeverAskPermission()
+    {
+        configurePermissionStatusImg(null);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.activity_main_dialog_ask_settings_title)
+                .setMessage(R.string.activity_main_dialog_ask_settings_message)
+                .setPositiveButton(R.string.activity_main_dialog_ask_settings_positive_btn, ((dialogInterface, i) -> askToGoToSettings()))
+                .setNegativeButton(R.string.activity_main_dialog_ask_settings_negative_btn, ((dialogInterface, i) -> MainActivity.this.finish()))
+                .show();
+    }
+
+    // --- Location Configuration --- //
+
+    private void configureLocationCallback()
+    {
+        locationCallback = new LocationCallback()
+        {
+            private int count = 0;
+
+            @Override
+            public void onLocationResult(LocationResult locationResult)
+            {
+                if (locationResult == null)
+                    return;
+                handleLocationResult(locationResult, ++count);
+                super.onLocationResult(locationResult);
+            }
+        };
+    }
 
     private void configureLocationRequest()
     {
         request = LocationRequest.create();
         request.setInterval(UPDATE_INTERVAL_MILLIS);
-        request.setFastestInterval(FAsTEST_UPDATE_INTERVAL);
+        request.setFastestInterval(FASTEST_UPDATE_INTERVAL);
+        request.setMaxWaitTime(SLOWEST_UPDATE_INTERVAL);
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -204,7 +201,6 @@ public class MainActivity extends AppCompatActivity
                 .addOnSuccessListener(locationSettingsResponse ->
                         {
                             ExtensionsKt.errorLog(this, "Location enabled", null);
-                            canLaunchRequestLocation = true;
                             startLocationUpdates();
                         }
                 )
@@ -228,6 +224,22 @@ public class MainActivity extends AppCompatActivity
     private void startLocationUpdates()
     {
         fusedLocationClient.requestLocationUpdates(request, locationCallback, Looper.getMainLooper());
+    }
+
+    private void handleLocationResult(LocationResult locationResult, int count)
+    {
+        float speed = locationResult.getLastLocation().getSpeed() * 3.6f;
+        int intSpeed = Math.round(speed);
+        if (intSpeed <= 100 && intSpeed > 0)
+            updateUI(intSpeed);
+        if (intSpeed > 100)
+            updateUI(100);
+        if (intSpeed <= 0)
+            updateUI(1);
+
+        binding.activityMainLogsText.append(count + ". " + getString(R.string.activity_main_speed_text, Math.round(speed)) + "\n");
+        binding.activityMainLogsScrollView.fullScroll(View.FOCUS_DOWN);
+        ExtensionsKt.errorLog(MainActivity.this, "onLocationResult: " + speed + " km/h (=>" + intSpeed + ")", null);
     }
 
     private void stopLocationUpdates()

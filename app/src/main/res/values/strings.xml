@@ -1,8 +1,17 @@
 <resources>
     <string name="app_name">GpsApp - UbiTransports</string>
 
-    <string name="activity_main_dialog_positive_btn">Allow</string>
-    <string name="activity_main_dialog_negative_btn">Deny</string>
+    <!-- Alert Dialogs -->
+    <string name="activity_main_dialog_show_perm_request_title">Location permission</string>
+    <string name="activity_main_dialog_show_perm_request_message">To use this app you must grant location access</string>
+    <string name="activity_main_dialog_show_perm_request_positive_btn">Allow</string>
+    <string name="activity_main_dialog_show_perm_request_negative_btn">Deny</string>
+
+    <string name="activity_main_dialog_ask_settings_title">Location permission</string>
+    <string name="activity_main_dialog_ask_settings_message">You have permanently denied location permission, but you must allow it to use this app</string>
+    <string name="activity_main_dialog_ask_settings_positive_btn">Go to settings</string>
+    <string name="activity_main_dialog_ask_settings_negative_btn">Quit this app</string>
+
     <string name="activity_main_permission_granted_msg">Permission granted, can run</string>
     <string name="activity_main_permission_denied_msg">You have denied access to location on your device</string>
     <string name="activity_main_never_ask_permission_msg">You have permanently denied access to location on your device</string>
