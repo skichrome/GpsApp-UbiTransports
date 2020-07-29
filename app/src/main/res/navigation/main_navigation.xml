@@ -11,5 +11,15 @@
         android:id="@+id/currentSpeedFragment"
         android:name="com.skichrome.gpsapp.view.CurrentSpeedFragment"
         android:label="@string/navigation_current_speed_fragment_title"
-        tools:layout="@layout/fragment_current_speed" />
+        tools:layout="@layout/fragment_current_speed">
+        <action
+            android:id="@+id/action_currentSpeedFragment_to_averageSpeedFragment"
+            app:destination="@id/averageSpeedFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/averageSpeedFragment"
+        android:name="com.skichrome.gpsapp.view.AverageSpeedFragment"
+        android:label="@string/navigation_average_speed_fragment_title"
+        tools:layout="@layout/fragment_average_speed" />
 </navigation>

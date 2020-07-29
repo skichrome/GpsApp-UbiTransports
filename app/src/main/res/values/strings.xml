@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">GpsApp - UbiTransports</string>
 
+    <!-- Navigation -->
+    <string name="navigation_current_speed_fragment_title">Current Speed</string>
+    <string name="navigation_average_speed_fragment_title">Average Speed</string>
+
     <!-- Alert Dialogs -->
     <string name="activity_main_dialog_show_perm_request_title">Location permission</string>
     <string name="activity_main_dialog_show_perm_request_message">To use this app you must grant location access</string>
@@ -34,5 +38,4 @@
     <string name="gps_location_service_notification_text">GpsApp is listening to your location moves…</string>
     <string name="gps_location_service_notification_launch_activity">Launch Activity</string>
     <string name="gps_location_service_notification_cancel">Cancel</string>
-    <string name="navigation_current_speed_fragment_title">Current Speed</string>
 </resources>
