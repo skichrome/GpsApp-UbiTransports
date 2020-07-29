@@ -59,8 +59,7 @@ public class CurrentSpeedFragment extends Fragment
 
     private void configureViewModel()
     {
-        viewModelLazy.getValue().sayHello();
-        viewModelLazy.getValue().getLocation().observe(getViewLifecycleOwner(), locations ->
+        viewModelLazy.getValue().getLocations().observe(getViewLifecycleOwner(), locations ->
         {
             if (locations == null || locations.isEmpty())
             {

@@ -38,4 +38,7 @@
     <string name="gps_location_service_notification_text">GpsApp is listening to your location moves…</string>
     <string name="gps_location_service_notification_launch_activity">Launch Activity</string>
     <string name="gps_location_service_notification_cancel">Cancel</string>
+
+    <!-- Average Speed Fragment -->
+    <string name="fragment_average_speed_average_title">Average speed since your last stop</string>
 </resources>

@@ -28,4 +28,10 @@ public class DefaultEditLocationRepository implements EditLocationRepository
     {
         return localSource.insertLocation(locations);
     }
+
+    @Override
+    public Completable deleteAllLocations()
+    {
+        return localSource.deleteAllLocations();
+    }
 }

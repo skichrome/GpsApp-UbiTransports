@@ -44,4 +44,13 @@ public class LocalLocationSource implements LocationSource
     {
         return locationDao.observeLocations();
     }
+
+    @Override
+    public Completable deleteAllLocations()
+    {
+        return locationDao.flushLocationTable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .timeout(20, TimeUnit.SECONDS);
+    }
 }

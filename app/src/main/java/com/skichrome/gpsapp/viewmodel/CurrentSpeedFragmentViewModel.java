@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModel;
 import com.skichrome.gpsapp.model.base.ReadLocationRepository;
 import com.skichrome.gpsapp.model.local.database.RoomLocation;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 public class CurrentSpeedFragmentViewModel extends ViewModel
@@ -20,9 +22,9 @@ public class CurrentSpeedFragmentViewModel extends ViewModel
 
     private ReadLocationRepository repository;
 
-    private LiveData<List<RoomLocation>> location;
+    private LiveData<List<RoomLocation>> locations;
 
-    private MutableLiveData<Boolean> isStopped;
+    private MutableLiveData<Boolean> isStopped = new MutableLiveData<>(false);
 
     public CurrentSpeedFragmentViewModel(ReadLocationRepository repository)
     {
@@ -31,38 +33,18 @@ public class CurrentSpeedFragmentViewModel extends ViewModel
 
     // --- Getters --- //
 
-    public LiveData<List<RoomLocation>> getLocation()
+    public LiveData<List<RoomLocation>> getLocations()
     {
-        if (location == null)
+        if (locations == null)
         {
-            location = repository.observeLocations();
-            location = Transformations.map(repository.observeLocations(), locationList ->
-            {
-                // Check list size, it must be sufficient
-                if (locationList.size() > 5)
-                {
-                    // Counter to test if the vehicle is stationary (it must be at least a number of location speed near zero to consider a stop
-                    int stopCount = 0;
-                    List<RoomLocation> lastLocations = locationList.subList(locationList.size() - 5, locationList.size());
-                    for (RoomLocation lastLocation : lastLocations)
-                    {
-                        if (Math.round(lastLocation.getSpeed()) <= 5)
-                            stopCount++;
-                        Log.e("CurrentSpeed", "stopCount: " + stopCount);
-                    }
-                    if (stopCount >= 5)
-                        isStopped.setValue(true);
-                }
-                return locationList;
-            });
+            locations = repository.observeLocations();
+            locations = Transformations.map(repository.observeLocations(), this::searchIfStopped);
         }
-        return location;
+        return locations;
     }
 
     public LiveData<Boolean> getStopped()
     {
-        if (isStopped == null)
-            isStopped = new MutableLiveData<>(false);
         return isStopped;
     }
 
@@ -70,13 +52,29 @@ public class CurrentSpeedFragmentViewModel extends ViewModel
     //              Methods
     // =================================
 
-    public void sayHello()
-    {
-        Log.e(getClass().getSimpleName(), "sayHello: Hello world !");
-    }
-
     public void resetStoppedIndicator()
     {
         isStopped.setValue(false);
+    }
+
+    @NotNull
+    private List<RoomLocation> searchIfStopped(List<RoomLocation> locationList)
+    {
+        // Check list size, it must be sufficient
+        if (locationList.size() > 5)
+        {
+            // Counter to test if the vehicle is stationary (it must be at least a number of location speed near zero to consider a stop
+            int stopCount = 0;
+            List<RoomLocation> lastLocations = locationList.subList(locationList.size() - 5, locationList.size());
+            for (RoomLocation lastLocation : lastLocations)
+            {
+                if (Math.round(lastLocation.getSpeed()) <= 5)
+                    stopCount++;
+                Log.e("searchIfStopped", "stopCount: " + stopCount);
+            }
+            if (stopCount >= 3)
+                isStopped.setValue(true);
+        }
+        return locationList;
     }
 }

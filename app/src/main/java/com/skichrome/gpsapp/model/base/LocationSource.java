@@ -13,4 +13,6 @@ public interface LocationSource
     Completable insertLocation(RoomLocation location);
 
     LiveData<List<RoomLocation>> observeLocations();
+
+    Completable deleteAllLocations();
 }

@@ -7,4 +7,6 @@ import io.reactivex.Completable;
 public interface EditLocationRepository
 {
     Completable saveNewLocations(RoomLocation locations);
+
+    Completable deleteAllLocations();
 }

@@ -21,4 +21,7 @@ public interface LocationDao
 
     @Query("SELECT * FROM location")
     LiveData<List<RoomLocation>> observeLocations();
+
+    @Query("DELETE FROM location")
+    Completable flushLocationTable();
 }

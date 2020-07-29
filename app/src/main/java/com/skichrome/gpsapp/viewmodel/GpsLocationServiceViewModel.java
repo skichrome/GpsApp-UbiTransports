@@ -7,8 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.skichrome.gpsapp.model.base.EditLocationRepository;
 import com.skichrome.gpsapp.model.local.database.RoomLocation;
 
-import io.reactivex.CompletableObserver;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableCompletableObserver;
 
 public class GpsLocationServiceViewModel extends ViewModel
 {
@@ -31,15 +30,9 @@ public class GpsLocationServiceViewModel extends ViewModel
 
     public void sendNewLocation(RoomLocation location)
     {
-        CompletableObserver observer = repository.saveNewLocations(location)
-                .subscribeWith(new CompletableObserver()
+        repository.saveNewLocations(location)
+                .subscribe(new DisposableCompletableObserver()
                 {
-                    @Override
-                    public void onSubscribe(Disposable d)
-                    {
-                        Log.d(TAG, "Observer is subscribing now");
-                    }
-
                     @Override
                     public void onComplete()
                     {
