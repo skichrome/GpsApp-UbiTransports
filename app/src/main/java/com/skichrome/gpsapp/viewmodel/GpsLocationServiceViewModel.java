@@ -1,12 +1,14 @@
 package com.skichrome.gpsapp.viewmodel;
 
-import android.location.Location;
+import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
 
-import com.skichrome.gpsapp.model.LocationRepository;
+import com.skichrome.gpsapp.model.base.EditLocationRepository;
+import com.skichrome.gpsapp.model.local.database.RoomLocation;
 
-import java.util.List;
+import io.reactivex.CompletableObserver;
+import io.reactivex.disposables.Disposable;
 
 public class GpsLocationServiceViewModel extends ViewModel
 {
@@ -14,15 +16,41 @@ public class GpsLocationServiceViewModel extends ViewModel
     //              Fields
     // =================================
 
-    private LocationRepository repository;
+    private String TAG = GpsLocationServiceViewModel.class.getSimpleName();
 
-    public GpsLocationServiceViewModel(LocationRepository repository)
+    private EditLocationRepository repository;
+
+    public GpsLocationServiceViewModel(EditLocationRepository repository)
     {
         this.repository = repository;
     }
 
-    public void sendNewLocation(List<Location> location)
+    // =================================
+    //              Methods
+    // =================================
+
+    public void sendNewLocation(RoomLocation location)
     {
-        repository.onNewLocation(location);
+        CompletableObserver observer = repository.saveNewLocations(location)
+                .subscribeWith(new CompletableObserver()
+                {
+                    @Override
+                    public void onSubscribe(Disposable d)
+                    {
+                        Log.d(TAG, "Observer is subscribing now");
+                    }
+
+                    @Override
+                    public void onComplete()
+                    {
+                        Log.d(TAG, "Insert in database complete");
+                    }
+
+                    @Override
+                    public void onError(Throwable e)
+                    {
+                        Log.e(TAG, "An error occurred when insert new location", e);
+                    }
+                });
     }
 }

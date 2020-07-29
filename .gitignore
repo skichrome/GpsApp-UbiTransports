@@ -86,3 +86,4 @@ lint/tmp/
 
 # Android Profiling
 *.hprof
+/app/schemas/com.skichrome.gpsapp.model.local.database.GpsAppDatabase/1.json

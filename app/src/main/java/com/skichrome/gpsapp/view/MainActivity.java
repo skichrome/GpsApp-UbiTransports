@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.skichrome.gpsapp.BuildConfig;
 import com.skichrome.gpsapp.R;
 import com.skichrome.gpsapp.databinding.ActivityMainBinding;
+import com.skichrome.gpsapp.model.local.database.RoomLocation;
 import com.skichrome.gpsapp.service.GpsLocationService;
 import com.skichrome.gpsapp.util.ExtensionsKt;
 import com.skichrome.gpsapp.viewmodel.ActivityMainViewModel;
@@ -118,16 +118,19 @@ public class MainActivity extends AppCompatActivity
         viewModelLazy.getValue().sayHello();
         viewModelLazy.getValue().getLocation().observe(this, locations ->
         {
-            if (locations == null)
+            if (locations == null || locations.isEmpty())
+            {
+                ExtensionsKt.errorLog(MainActivity.this, "Location list is empty or null", null);
                 return;
+            }
             handleLocationResult(locations);
-            ExtensionsKt.errorLog(MainActivity.this, "New Location available ! " + locations.get(locations.size() - 1).getSpeed() * 3.6, null);
+            ExtensionsKt.errorLog(MainActivity.this, "New Location available ! id: " + locations.get(locations.size() - 1).getId(), null);
         });
     }
 
-    private void handleLocationResult(List<Location> locations)
+    private void handleLocationResult(List<RoomLocation> locations)
     {
-        Location lastLocation = locations.get(locations.size() - 1);
+        RoomLocation lastLocation = locations.get(locations.size() - 1);
         float speed = lastLocation.getSpeed() * 3.6f;
         int intSpeed = Math.round(speed);
         if (intSpeed <= 100 && intSpeed > 0)

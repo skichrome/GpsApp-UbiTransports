@@ -25,6 +25,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.skichrome.gpsapp.R;
+import com.skichrome.gpsapp.model.local.database.RoomLocation;
 import com.skichrome.gpsapp.util.ExtensionsKt;
 import com.skichrome.gpsapp.view.MainActivity;
 import com.skichrome.gpsapp.viewmodel.GpsLocationServiceViewModel;
@@ -189,7 +190,15 @@ public class GpsLocationService extends Service
 
     private void handleLocationResult(LocationResult locationResult)
     {
-        viewModelLazy.getValue().sendNewLocation(locationResult.getLocations());
+        RoomLocation roomLocation = new RoomLocation(
+                0L,
+                locationResult.getLastLocation().getLatitude(),
+                locationResult.getLastLocation().getLongitude(),
+                locationResult.getLastLocation().getSpeed(),
+                locationResult.getLastLocation().getTime()
+        );
+        viewModelLazy.getValue().sendNewLocation(roomLocation);
+
         if (serviceIsInForeground(this))
             notificationManager.notify(NOTIFICATION_ID, getNotification());
     }
