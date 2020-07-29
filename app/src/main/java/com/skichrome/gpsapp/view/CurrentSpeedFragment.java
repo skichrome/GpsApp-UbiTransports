@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 
 import com.skichrome.gpsapp.databinding.FragmentCurrentSpeedBinding;
 import com.skichrome.gpsapp.model.local.database.RoomLocation;
@@ -47,6 +49,7 @@ public class CurrentSpeedFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+        configureViewModel();
     }
 
     // =================================
@@ -57,14 +60,22 @@ public class CurrentSpeedFragment extends Fragment
     private void configureViewModel()
     {
         viewModelLazy.getValue().sayHello();
-        viewModelLazy.getValue().getLocation().observe(this, locations ->
+        viewModelLazy.getValue().getLocation().observe(getViewLifecycleOwner(), locations ->
         {
             if (locations == null || locations.isEmpty())
             {
-                ExtensionsKt.errorLog(requireActivity(), "Location list is empty or null", null);
+                ExtensionsKt.errorLog(this, "Location list is empty or null", null);
                 return;
             }
             handleLocationResult(locations);
+        });
+        viewModelLazy.getValue().getStopped().observe(getViewLifecycleOwner(), isStopped ->
+        {
+            if (isStopped)
+            {
+                navigateToAverageSpeedFragment();
+                viewModelLazy.getValue().resetStoppedIndicator();
+            }
         });
     }
 
@@ -80,7 +91,7 @@ public class CurrentSpeedFragment extends Fragment
         if (intSpeed <= 0)
             updateUI(1);
 
-        ExtensionsKt.errorLog(requireActivity(), "onLocationResult: " + speed + " km/h (=>" + intSpeed + ")", null);
+        ExtensionsKt.errorLog(this, "onLocationResult: " + speed + " km/h (=>" + intSpeed + ") id: " + lastLocation.getId(), null);
     }
 
     private void updateUI(int percent)
@@ -88,5 +99,13 @@ public class CurrentSpeedFragment extends Fragment
         DisplayMetrics metrics = new DisplayMetrics();
         requireActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         binding.fragmentCurrentSpeedIndicator.getLayoutParams().width = percent * metrics.widthPixels / 100;
+    }
+
+    // --- Navigation --- //
+
+    private void navigateToAverageSpeedFragment()
+    {
+        NavDirections opts = CurrentSpeedFragmentDirections.actionCurrentSpeedFragmentToAverageSpeedFragment();
+        Navigation.findNavController(binding.getRoot()).navigate(opts);
     }
 }
