@@ -8,9 +8,14 @@
     <string name="activity_main_dialog_show_perm_request_negative_btn">Deny</string>
 
     <string name="activity_main_dialog_ask_settings_title">Location permission</string>
-    <string name="activity_main_dialog_ask_settings_message">You have permanently denied location permission, but you must allow it to use this app</string>
-    <string name="activity_main_dialog_ask_settings_positive_btn">Go to settings</string>
+    <string name="activity_main_dialog_ask_settings_message">You have denied location permission, but you must allow it to use this app</string>
+    <string name="activity_main_dialog_ask_settings_positive_btn">Allow</string>
     <string name="activity_main_dialog_ask_settings_negative_btn">Quit this app</string>
+
+    <string name="activity_main_dialog_never_ask_settings_title">Location permission</string>
+    <string name="activity_main_dialog_never_ask_settings_message">You have permanently denied location permission, but you must allow it to use this app</string>
+    <string name="activity_main_dialog_never_ask_settings_positive_btn">Go to settings</string>
+    <string name="activity_main_dialog_never_ask_settings_negative_btn">Quit this app</string>
 
     <string name="activity_main_dialog_ask_enable_location_param_title">Location parameter</string>
     <string name="activity_main_dialog_ask_enable_location_param_message">Please enable location on your device</string>
@@ -29,4 +34,5 @@
     <string name="gps_location_service_notification_text">GpsApp is listening to your location moves…</string>
     <string name="gps_location_service_notification_launch_activity">Launch Activity</string>
     <string name="gps_location_service_notification_cancel">Cancel</string>
+    <string name="navigation_current_speed_fragment_title">Current Speed</string>
 </resources>

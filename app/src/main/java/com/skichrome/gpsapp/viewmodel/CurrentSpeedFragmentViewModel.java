@@ -10,7 +10,7 @@ import com.skichrome.gpsapp.model.local.database.RoomLocation;
 
 import java.util.List;
 
-public class ActivityMainViewModel extends ViewModel
+public class CurrentSpeedFragmentViewModel extends ViewModel
 {
     // =================================
     //              Fields
@@ -20,7 +20,7 @@ public class ActivityMainViewModel extends ViewModel
 
     private LiveData<List<RoomLocation>> location;
 
-    public ActivityMainViewModel(ReadLocationRepository repository)
+    public CurrentSpeedFragmentViewModel(ReadLocationRepository repository)
     {
         this.repository = repository;
     }
@@ -40,6 +40,6 @@ public class ActivityMainViewModel extends ViewModel
 
     public void sayHello()
     {
-        Log.e("ActivityVM", "sayHello: Hello world !");
+        Log.e(getClass().getSimpleName(), "sayHello: Hello world !");
     }
 }

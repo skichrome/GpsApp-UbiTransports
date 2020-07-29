@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/currentSpeedFragment">
+
+    <fragment
+        android:id="@+id/currentSpeedFragment"
+        android:name="com.skichrome.gpsapp.view.CurrentSpeedFragment"
+        android:label="@string/navigation_current_speed_fragment_title"
+        tools:layout="@layout/fragment_current_speed" />
+</navigation>

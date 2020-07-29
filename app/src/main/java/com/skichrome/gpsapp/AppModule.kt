@@ -9,7 +9,7 @@ import com.skichrome.gpsapp.model.base.ReadLocationRepository
 import com.skichrome.gpsapp.model.local.LocalLocationSource
 import com.skichrome.gpsapp.model.local.database.GpsAppDatabase
 import com.skichrome.gpsapp.model.local.database.LocationDao
-import com.skichrome.gpsapp.viewmodel.ActivityMainViewModel
+import com.skichrome.gpsapp.viewmodel.CurrentSpeedFragmentViewModel
 import com.skichrome.gpsapp.viewmodel.GpsLocationServiceViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -32,6 +32,6 @@ val appModule = module {
     single<EditLocationRepository> { DefaultEditLocationRepository(get()) }
 
     // ViewModels
-    viewModel { ActivityMainViewModel(get()) }
+    viewModel { CurrentSpeedFragmentViewModel(get()) }
     viewModel { GpsLocationServiceViewModel(get()) }
 }

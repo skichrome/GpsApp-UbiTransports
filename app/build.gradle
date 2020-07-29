@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: "androidx.navigation.safeargs"
 apply plugin: 'kotlin-android'
 
 android {
@@ -63,6 +64,10 @@ dependencies {
 
     // Preferences
     implementation 'androidx.preference:preference:1.1.1'
+
+    // Navigation Component
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
 
     // Database
     implementation "androidx.room:room-runtime:$room_version"
