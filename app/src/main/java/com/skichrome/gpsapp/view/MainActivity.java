@@ -1,38 +1,41 @@
 package com.skichrome.gpsapp.view;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
+import android.content.ServiceConnection;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Looper;
+import android.os.IBinder;
 import android.provider.Settings;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.SettingsClient;
 import com.skichrome.gpsapp.BuildConfig;
 import com.skichrome.gpsapp.R;
 import com.skichrome.gpsapp.databinding.ActivityMainBinding;
+import com.skichrome.gpsapp.service.GpsLocationService;
 import com.skichrome.gpsapp.util.ExtensionsKt;
+import com.skichrome.gpsapp.viewmodel.ActivityMainViewModel;
 
+import java.util.List;
+
+import kotlin.Lazy;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnPermissionDenied;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
+
+import static org.koin.java.KoinJavaComponent.inject;
 
 @RuntimePermissions
 public class MainActivity extends AppCompatActivity
@@ -42,15 +45,29 @@ public class MainActivity extends AppCompatActivity
     // =================================
 
     private ActivityMainBinding binding;
+    private Lazy<ActivityMainViewModel> viewModelLazy = inject(ActivityMainViewModel.class);
 
-    private static final int UPDATE_INTERVAL_MILLIS = 1000;
-    private static final int FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL_MILLIS / 2;
-    private static final int SLOWEST_UPDATE_INTERVAL = UPDATE_INTERVAL_MILLIS * 2;
-    private static final int REQUEST_CHECK_SETTINGS = 1234;
+    private GpsLocationService service;
+    private boolean bound = false;
 
-    private LocationRequest request;
-    private FusedLocationProviderClient fusedLocationClient;
-    private LocationCallback locationCallback;
+    private final ServiceConnection serviceConnection = new ServiceConnection()
+    {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder)
+        {
+            GpsLocationService.LocalBinder binder = (GpsLocationService.LocalBinder) iBinder;
+            service = binder.getService();
+            bound = true;
+            service.startLocationUpdates();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName)
+        {
+            service = null;
+            bound = false;
+        }
+    };
 
     // =================================
     //        Superclass Methods
@@ -62,7 +79,25 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        configureViewModel();
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        checkIfLocationSettingIsEnabled();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        if (bound)
+        {
+            unbindService(serviceConnection);
+            bound = false;
+        }
+        super.onStop();
     }
 
     @Override
@@ -72,29 +107,46 @@ public class MainActivity extends AppCompatActivity
         MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        MainActivityPermissionsDispatcher.beginLocationUpdatesWithPermissionCheck(this);
-    }
-
-    @Override
-    protected void onStop()
-    {
-        stopLocationUpdates();
-        super.onStop();
-    }
-
     // =================================
     //              Methods
     // =================================
 
     // --- UI & configuration --- //
 
+    private void configureViewModel()
+    {
+        viewModelLazy.getValue().sayHello();
+        viewModelLazy.getValue().getLocation().observe(this, locations ->
+        {
+            if (locations == null)
+                return;
+            handleLocationResult(locations);
+            ExtensionsKt.errorLog(MainActivity.this, "New Location available ! " + locations.get(locations.size() - 1).getSpeed() * 3.6, null);
+        });
+    }
+
+    private void handleLocationResult(List<Location> locations)
+    {
+        Location lastLocation = locations.get(locations.size() - 1);
+        float speed = lastLocation.getSpeed() * 3.6f;
+        int intSpeed = Math.round(speed);
+        if (intSpeed <= 100 && intSpeed > 0)
+            updateUI(intSpeed);
+        if (intSpeed > 100)
+            updateUI(100);
+        if (intSpeed <= 0)
+            updateUI(1);
+
+        binding.activityMainLogsText.append(getString(R.string.activity_main_speed_text, Math.round(speed)) + "\n");
+        binding.activityMainLogsScrollView.fullScroll(View.FOCUS_DOWN);
+        ExtensionsKt.errorLog(MainActivity.this, "onLocationResult: " + speed + " km/h (=>" + intSpeed + ")", null);
+    }
+
     private void updateUI(int percent)
     {
-        binding.activityMainSpeedBar.getLayoutParams().width = percent;
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        binding.activityMainSpeedBar.getLayoutParams().width = percent * metrics.widthPixels / 100;
     }
 
     private void configurePermissionStatusImg(Boolean isLocationGranted)
@@ -127,10 +179,8 @@ public class MainActivity extends AppCompatActivity
     @NeedsPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     void beginLocationUpdates()
     {
-        configureLocationCallback();
         configurePermissionStatusImg(true);
-        configureLocationRequest();
-        checkIfLocationSettingIsEnabled();
+        bindService(new Intent(MainActivity.this, GpsLocationService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @OnShowRationale(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -165,87 +215,22 @@ public class MainActivity extends AppCompatActivity
 
     // --- Location Configuration --- //
 
-    private void configureLocationCallback()
-    {
-        locationCallback = new LocationCallback()
-        {
-            private int count = 0;
-
-            @Override
-            public void onLocationResult(LocationResult locationResult)
-            {
-                if (locationResult == null)
-                    return;
-                handleLocationResult(locationResult, ++count);
-                super.onLocationResult(locationResult);
-            }
-        };
-    }
-
-    private void configureLocationRequest()
-    {
-        request = LocationRequest.create();
-        request.setInterval(UPDATE_INTERVAL_MILLIS);
-        request.setFastestInterval(FASTEST_UPDATE_INTERVAL);
-        request.setMaxWaitTime(SLOWEST_UPDATE_INTERVAL);
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
-
     private void checkIfLocationSettingIsEnabled()
     {
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(request);
-
-        SettingsClient client = LocationServices.getSettingsClient(this);
-        client.checkLocationSettings(builder.build())
-                .addOnSuccessListener(locationSettingsResponse ->
-                        {
-                            ExtensionsKt.errorLog(this, "Location enabled", null);
-                            startLocationUpdates();
-                        }
-                )
-                .addOnFailureListener((e) ->
-                {
-                    if (e instanceof ResolvableApiException)
-                    {
-                        try
-                        {
-                            ResolvableApiException resolvable = (ResolvableApiException) e;
-                            resolvable.startResolutionForResult(this, REQUEST_CHECK_SETTINGS);
-                        } catch (IntentSender.SendIntentException sendEx)
-                        {
-                            ExtensionsKt.errorLog(MainActivity.this, "An error occurred when sending location setting intent", sendEx);
-                        }
-                    }
-                });
-    }
-
-    @SuppressLint("MissingPermission")
-    private void startLocationUpdates()
-    {
-        fusedLocationClient.requestLocationUpdates(request, locationCallback, Looper.getMainLooper());
-    }
-
-    private void handleLocationResult(LocationResult locationResult, int count)
-    {
-        float speed = locationResult.getLastLocation().getSpeed() * 3.6f;
-        int intSpeed = Math.round(speed);
-        if (intSpeed <= 100 && intSpeed > 0)
-            updateUI(intSpeed);
-        if (intSpeed > 100)
-            updateUI(100);
-        if (intSpeed <= 0)
-            updateUI(1);
-
-        binding.activityMainLogsText.append(count + ". " + getString(R.string.activity_main_speed_text, Math.round(speed)) + "\n");
-        binding.activityMainLogsScrollView.fullScroll(View.FOCUS_DOWN);
-        ExtensionsKt.errorLog(MainActivity.this, "onLocationResult: " + speed + " km/h (=>" + intSpeed + ")", null);
-    }
-
-    private void stopLocationUpdates()
-    {
-        if (fusedLocationClient == null)
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (manager == null)
             return;
-        fusedLocationClient.removeLocationUpdates(locationCallback);
+
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.activity_main_dialog_ask_enable_location_param_title)
+                    .setMessage(R.string.activity_main_dialog_ask_enable_location_param_message)
+                    .setPositiveButton(R.string.activity_main_dialog_ask_enable_location_param_positive_btn, ((dialog, i) -> startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))))
+                    .setNegativeButton(R.string.activity_main_dialog_ask_enable_location_param_negative_btn, (dialogInterface, i) -> finish())
+                    .create()
+                    .show();
+        } else
+            MainActivityPermissionsDispatcher.beginLocationUpdatesWithPermissionCheck(this);
     }
 }
