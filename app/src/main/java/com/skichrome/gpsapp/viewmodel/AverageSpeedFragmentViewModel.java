@@ -32,7 +32,6 @@ public class AverageSpeedFragmentViewModel extends ViewModel
     private LiveData<List<RoomLocation>> locations;
     private MutableLiveData<Double> average = new MutableLiveData<>();
     private MutableLiveData<Boolean> isInMovement = new MutableLiveData<>(false);
-    private MutableLiveData<Integer> movementCount = new MutableLiveData<>();
 
     public AverageSpeedFragmentViewModel(ReadLocationRepository readRepository, EditLocationRepository editRepository)
     {
@@ -72,11 +71,6 @@ public class AverageSpeedFragmentViewModel extends ViewModel
         return locations;
     }
 
-    public LiveData<Integer> getMovementCount()
-    {
-        return movementCount;
-    }
-
     // =================================
     //              Methods
     // =================================
@@ -112,8 +106,6 @@ public class AverageSpeedFragmentViewModel extends ViewModel
             }
             if (movementCount >= 5)
                 resetLocation();
-
-            this.movementCount.setValue(movementCount);
         }
         return locationList;
     }

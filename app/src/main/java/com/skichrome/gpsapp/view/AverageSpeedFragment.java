@@ -90,8 +90,6 @@ public class AverageSpeedFragment extends Fragment
             }
         });
 
-        viewModelLazy.getValue().getMovementCount().observe(getViewLifecycleOwner(), movCount ->
-                ExtensionsKt.shortToast(requireActivity(), getString(R.string.average_speed_view_model_movement_count_msg, movCount)));
         viewModelLazy.getValue().getAverage().observe(getViewLifecycleOwner(), average ->
                 binding.fragmentAverageSpeedSpeedValue.setText(getString(R.string.fragment_average_speed_speed_value, average)));
     }
