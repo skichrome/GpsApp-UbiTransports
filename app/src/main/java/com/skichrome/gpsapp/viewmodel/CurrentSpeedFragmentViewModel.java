@@ -10,8 +10,6 @@ import androidx.lifecycle.ViewModel;
 import com.skichrome.gpsapp.model.base.ReadLocationRepository;
 import com.skichrome.gpsapp.model.local.database.RoomLocation;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 
 public class CurrentSpeedFragmentViewModel extends ViewModel
@@ -22,7 +20,7 @@ public class CurrentSpeedFragmentViewModel extends ViewModel
 
     private ReadLocationRepository repository;
 
-    private LiveData<List<RoomLocation>> locations;
+    private LiveData<RoomLocation> location;
 
     private MutableLiveData<Boolean> isStopped = new MutableLiveData<>(false);
 
@@ -33,14 +31,11 @@ public class CurrentSpeedFragmentViewModel extends ViewModel
 
     // --- Getters --- //
 
-    public LiveData<List<RoomLocation>> getLocations()
+    public LiveData<RoomLocation> getLastLocation()
     {
-        if (locations == null)
-        {
-            locations = repository.observeLocations();
-            locations = Transformations.map(repository.observeLocations(), this::searchIfStopped);
-        }
-        return locations;
+        if (location == null)
+            location = Transformations.map(repository.observeLocations(), this::searchIfStoppedAndGetLast);
+        return location;
     }
 
     public LiveData<Boolean> getStopped()
@@ -57,9 +52,11 @@ public class CurrentSpeedFragmentViewModel extends ViewModel
         isStopped.setValue(false);
     }
 
-    @NotNull
-    private List<RoomLocation> searchIfStopped(List<RoomLocation> locationList)
+    private RoomLocation searchIfStoppedAndGetLast(List<RoomLocation> locationList)
     {
+        if (locationList.isEmpty())
+            return null;
+
         // Check list size, it must be sufficient
         if (locationList.size() > 5)
         {
@@ -68,13 +65,13 @@ public class CurrentSpeedFragmentViewModel extends ViewModel
             List<RoomLocation> lastLocations = locationList.subList(locationList.size() - 5, locationList.size());
             for (RoomLocation lastLocation : lastLocations)
             {
-                if (Math.round(lastLocation.getSpeed()) <= 5)
+                if (Math.round(lastLocation.getSpeed()) <= 2)
                     stopCount++;
                 Log.e("searchIfStopped", "stopCount: " + stopCount);
             }
-            if (stopCount >= 3)
+            if (stopCount >= 2)
                 isStopped.setValue(true);
         }
-        return locationList;
+        return locationList.get(locationList.size() - 1);
     }
 }

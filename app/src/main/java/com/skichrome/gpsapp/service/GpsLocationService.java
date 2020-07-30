@@ -50,7 +50,6 @@ public class GpsLocationService extends Service
     // --- Location
     private static final int UPDATE_INTERVAL_MILLIS = 1000;
     private static final int FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL_MILLIS / 2;
-    private static final int SLOWEST_UPDATE_INTERVAL = UPDATE_INTERVAL_MILLIS * 2;
     private final IBinder binder = new LocalBinder();
     private NotificationManager notificationManager;
     private boolean isConfigurationChanged = false;
@@ -170,7 +169,6 @@ public class GpsLocationService extends Service
         request = LocationRequest.create();
         request.setInterval(UPDATE_INTERVAL_MILLIS);
         request.setFastestInterval(FASTEST_UPDATE_INTERVAL);
-        request.setMaxWaitTime(SLOWEST_UPDATE_INTERVAL);
         request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -194,7 +192,7 @@ public class GpsLocationService extends Service
                 0L,
                 locationResult.getLastLocation().getLatitude(),
                 locationResult.getLastLocation().getLongitude(),
-                locationResult.getLastLocation().getSpeed(),
+                locationResult.getLastLocation().getSpeed() * 3.6f,
                 locationResult.getLastLocation().getTime()
         );
         viewModelLazy.getValue().sendNewLocation(roomLocation);
@@ -234,6 +232,7 @@ public class GpsLocationService extends Service
                 .setContentText(getString(R.string.gps_location_service_notification_text))
                 .setContentTitle(getString(R.string.gps_location_service_notification_name))
                 .setOngoing(true)
+                .setNotificationSilent()
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker(getString(R.string.gps_location_service_notification_name))

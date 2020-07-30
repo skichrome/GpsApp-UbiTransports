@@ -31,14 +31,22 @@
     <string name="activity_main_never_ask_permission_msg">You have permanently denied access to location on your device</string>
     <string name="activity_main_img_perm_status_content_desc">Permission is granted or not</string>
 
-    <string name="activity_main_speed_text">Current speed : %1d km/h</string>
-
     <!-- Services -->
     <string name="gps_location_service_notification_name">GpsApp is using GPS</string>
     <string name="gps_location_service_notification_text">GpsApp is listening to your location moves…</string>
     <string name="gps_location_service_notification_launch_activity">Launch Activity</string>
     <string name="gps_location_service_notification_cancel">Cancel</string>
 
+    <!-- Current Speed Fragment -->
+    <string name="fragment_current_speed_section_title">Last location information</string>
+    <string name="fragment_current_speed_id_timestamp_speed">id: %1$d / Timestamp: %2$d / Speed: %3$.2f</string>
+    <string name="fragment_current_speed_lat_lng">Lat: %1$f / Lng: %2$f</string>
+
     <!-- Average Speed Fragment -->
     <string name="fragment_average_speed_average_title">Average speed since your last stop</string>
+    <string name="fragment_average_speed_speed_value">%1$f km/h</string>
+    <string name="fragment_average_speed_points_number">Points number : %1$d</string>
+
+    <!-- ViewModels -->
+    <string name="average_speed_view_model_movement_count_msg">Movement count: %1$d</string>
 </resources>

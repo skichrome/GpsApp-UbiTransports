@@ -5,12 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.skichrome.gpsapp.R;
 import com.skichrome.gpsapp.databinding.FragmentAverageSpeedBinding;
+import com.skichrome.gpsapp.util.ExtensionsKt;
 import com.skichrome.gpsapp.viewmodel.AverageSpeedFragmentViewModel;
 
 import kotlin.Lazy;
@@ -42,6 +45,7 @@ public class AverageSpeedFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+        configureBackPressed();
         configureViewModel();
     }
 
@@ -49,9 +53,29 @@ public class AverageSpeedFragment extends Fragment
     //              Methods
     // =================================
 
+    private void configureBackPressed()
+    {
+        OnBackPressedCallback callback = new OnBackPressedCallback(true)
+        {
+            @Override
+            public void handleOnBackPressed()
+            {
+                requireActivity().finish();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+    }
+
     private void configureViewModel()
     {
-        binding.setViewModel(viewModelLazy.getValue());
+        viewModelLazy.getValue().getLocations().observe(getViewLifecycleOwner(), locationList ->
+        {
+            if (locationList == null || locationList.isEmpty())
+                return;
+
+            binding.fragmentAverageSpeedLocationCount.setText(getString(R.string.fragment_average_speed_points_number, locationList.size()));
+            ExtensionsKt.shortToast(requireActivity(), "Avg: " + locationList.get(locationList.size() - 1).getSpeed());
+        });
         viewModelLazy.getValue().getIsInMovement().observe(getViewLifecycleOwner(), isInMovement ->
         {
             if (isInMovement)
@@ -59,6 +83,12 @@ public class AverageSpeedFragment extends Fragment
                 viewModelLazy.getValue().resetMovementIndicator();
                 Navigation.findNavController(binding.getRoot()).navigateUp();
             }
+        });
+        viewModelLazy.getValue().getMovementCount().observe(getViewLifecycleOwner(), movCount -> ExtensionsKt.shortToast(requireActivity(), getString(R.string.average_speed_view_model_movement_count_msg, movCount)));
+        viewModelLazy.getValue().getAverage().observe(getViewLifecycleOwner(), average ->
+        {
+            binding.fragmentAverageSpeedSpeedValue.setText(getString(R.string.fragment_average_speed_speed_value, average));
+            ExtensionsKt.shortToast(requireActivity(), "Average computed : " + average);
         });
     }
 }

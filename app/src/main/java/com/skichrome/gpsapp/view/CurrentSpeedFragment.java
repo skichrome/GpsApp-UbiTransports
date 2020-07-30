@@ -12,12 +12,11 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
+import com.skichrome.gpsapp.R;
 import com.skichrome.gpsapp.databinding.FragmentCurrentSpeedBinding;
 import com.skichrome.gpsapp.model.local.database.RoomLocation;
 import com.skichrome.gpsapp.util.ExtensionsKt;
 import com.skichrome.gpsapp.viewmodel.CurrentSpeedFragmentViewModel;
-
-import java.util.List;
 
 import kotlin.Lazy;
 
@@ -55,17 +54,16 @@ public class CurrentSpeedFragment extends Fragment
     // =================================
     //              Methods
     // =================================
+
     // --- UI & configuration --- //
 
     private void configureViewModel()
     {
-        viewModelLazy.getValue().getLocations().observe(getViewLifecycleOwner(), locations ->
+        viewModelLazy.getValue().getLastLocation().observe(getViewLifecycleOwner(), locations ->
         {
-            if (locations == null || locations.isEmpty())
-            {
-                ExtensionsKt.errorLog(this, "Location list is empty or null", null);
+            if (locations == null)
                 return;
-            }
+
             handleLocationResult(locations);
         });
         viewModelLazy.getValue().getStopped().observe(getViewLifecycleOwner(), isStopped ->
@@ -78,10 +76,9 @@ public class CurrentSpeedFragment extends Fragment
         });
     }
 
-    private void handleLocationResult(List<RoomLocation> locations)
+    private void handleLocationResult(RoomLocation location)
     {
-        RoomLocation lastLocation = locations.get(locations.size() - 1);
-        float speed = lastLocation.getSpeed() * 3.6f;
+        float speed = location.getSpeed();
         int intSpeed = Math.round(speed);
         if (intSpeed <= 100 && intSpeed > 0)
             updateUI(intSpeed);
@@ -90,7 +87,11 @@ public class CurrentSpeedFragment extends Fragment
         if (intSpeed <= 0)
             updateUI(1);
 
-        ExtensionsKt.errorLog(this, "onLocationResult: " + speed + " km/h (=>" + intSpeed + ") id: " + lastLocation.getId(), null);
+        ExtensionsKt.shortToast(requireActivity(), "speed : " + speed + " id: " + location.getId());
+        ExtensionsKt.errorLog(this, "onLocationResult: " + speed + " km/h (=>" + intSpeed + ") id: " + location.getId(), null);
+
+        binding.fragmentCurrentSpeedIdTimestampSpeed.setText(getString(R.string.fragment_current_speed_id_timestamp_speed, location.getId(), location.getTimestamp(), location.getSpeed()));
+        binding.fragmentCurrentSpeedLatLng.setText(getString(R.string.fragment_current_speed_lat_lng, location.getLatitude(), location.getLongitude()));
     }
 
     private void updateUI(int percent)

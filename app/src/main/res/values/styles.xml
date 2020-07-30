@@ -10,4 +10,20 @@
     <style name="GpsApp.Theme.Toolbar" parent="AppTheme">
         <item name="android:background">@color/primaryColor</item>
     </style>
+
+    <style name="GpsApp.Theme.Title" parent="AppTheme">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_marginStart">@dimen/text_views_default_margin</item>
+        <item name="android:layout_marginTop">@dimen/text_views_default_margin</item>
+    </style>
+
+    <style name="GpsApp.Theme.body1" parent="AppTheme">
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/text_views_default_margin</item>
+        <item name="android:layout_marginTop">@dimen/text_views_default_margin</item>
+    </style>
 </resources>

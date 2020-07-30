@@ -3,6 +3,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -19,4 +20,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/fragment_current_speed_section_title"
+        style="@style/GpsApp.Theme.Title"
+        android:text="@string/fragment_current_speed_section_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_current_speed_indicator" />
+
+    <TextView
+        android:id="@+id/fragment_current_speed_id_timestamp_speed"
+        style="@style/GpsApp.Theme.body1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_current_speed_section_title"
+        tools:text="id / Timestamp / XX km/h" />
+
+    <TextView
+        android:id="@+id/fragment_current_speed_lat_lng"
+        style="@style/GpsApp.Theme.body1"
+        android:text='@{"Lat: " + String.valueOf(viewModel.lastLocation.latitude) + " Lng: " + String.valueOf(viewModel.lastLocation.longitude)}'
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fragment_current_speed_id_timestamp_speed"
+        tools:text="LATITUDE / LONGITUDE" />
 </androidx.constraintlayout.widget.ConstraintLayout>

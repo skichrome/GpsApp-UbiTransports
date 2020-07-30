@@ -1,61 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <data>
+    <TextView
+        android:id="@+id/fragment_average_speed_average_title"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/text_views_default_margin"
+        android:layout_marginTop="@dimen/text_views_default_margin"
+        android:layout_marginEnd="@dimen/text_views_default_margin"
+        android:text="@string/fragment_average_speed_average_title"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2" />
 
-        <variable
-            name="viewModel"
-            type="com.skichrome.gpsapp.viewmodel.AverageSpeedFragmentViewModel" />
-    </data>
+    <TextView
+        android:id="@+id/fragment_average_speed_speed_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/text_views_default_margin"
+        android:layout_marginTop="@dimen/text_views_default_margin"
+        android:layout_marginEnd="@dimen/text_views_default_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_average_speed_average_title"
+        tools:text="XX KM/h" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/fragment_average_speed_location_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/text_views_default_margin"
+        android:layout_marginTop="@dimen/text_views_default_margin"
+        android:layout_marginEnd="@dimen/text_views_default_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_average_speed_speed_value"
+        tools:text="Nombre de points : XX" />
 
-        <TextView
-            android:id="@+id/fragment_average_speed_average_title"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/text_views_default_margin"
-            android:layout_marginTop="@dimen/text_views_default_margin"
-            android:layout_marginEnd="@dimen/text_views_default_margin"
-            android:text="@string/fragment_average_speed_average_title"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.2" />
-
-        <TextView
-            android:id="@+id/fragment_average_speed_speed_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/text_views_default_margin"
-            android:layout_marginTop="@dimen/text_views_default_margin"
-            android:layout_marginEnd="@dimen/text_views_default_margin"
-            android:text='@{String.valueOf(viewModel.average) + "km/h"}'
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fragment_average_speed_average_title"
-            tools:text="XX KM/h" />
-
-        <TextView
-            android:id="@+id/fragment_average_speed_location_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/text_views_default_margin"
-            android:layout_marginTop="@dimen/text_views_default_margin"
-            android:layout_marginEnd="@dimen/text_views_default_margin"
-            android:text='@{"Nombre de points de mesure : " + String.valueOf(viewModel.locations.size())}'
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fragment_average_speed_speed_value"
-            tools:text="Nombre de points : XX" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+</androidx.constraintlayout.widget.ConstraintLayout>
