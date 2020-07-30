@@ -24,6 +24,7 @@ public class AverageSpeedFragmentViewModel extends ViewModel
     // =================================
 
     private String TAG = getClass().getSimpleName();
+    private boolean needToComputeAverage = true;
 
     private EditLocationRepository editRepository;
     private ReadLocationRepository readRepository;
@@ -64,7 +65,11 @@ public class AverageSpeedFragmentViewModel extends ViewModel
                 {
                     return locations;
                 }
-                computeAverage(locations);
+                if (needToComputeAverage)
+                {
+                    computeAverage(locations);
+                    needToComputeAverage = false;
+                }
                 return searchIfMovement(locations);
             });
         }
@@ -131,5 +136,6 @@ public class AverageSpeedFragmentViewModel extends ViewModel
                         Log.d(TAG, "Insert in database complete");
                     }
                 });
+        needToComputeAverage = true;
     }
 }
