@@ -91,7 +91,8 @@ public class CurrentSpeedFragment extends Fragment
         ExtensionsKt.shortToast(requireActivity(), "speed : " + speed + " id: " + location.getId());
         ExtensionsKt.errorLog(this, "onLocationResult: " + speed + " km/h (=>" + intSpeed + ") id: " + location.getId(), null);
 
-        binding.fragmentCurrentSpeedIdTimestampSpeed.setText(getString(R.string.fragment_current_speed_id_timestamp_speed, location.getId(), location.getTimestamp(), location.getSpeed()));
+        binding.fragmentCurrentSpeedSpeedText.setText(getString(R.string.fragment_current_speed_speed_text, intSpeed));
+        binding.fragmentCurrentSpeedIdTimestampSpeed.setText(getString(R.string.fragment_current_speed_id_timestamp_speed, location.getId(), location.getTimestamp()));
         binding.fragmentCurrentSpeedLatLng.setText(getString(R.string.fragment_current_speed_lat_lng, location.getLatitude(), location.getLongitude()));
     }
 

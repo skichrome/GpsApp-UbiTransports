@@ -26,11 +26,6 @@
     <string name="activity_main_dialog_ask_enable_location_param_positive_btn">OK</string>
     <string name="activity_main_dialog_ask_enable_location_param_negative_btn">Quit this app</string>
 
-    <string name="activity_main_permission_granted_msg">Permission granted, can run</string>
-    <string name="activity_main_permission_denied_msg">You have denied access to location on your device</string>
-    <string name="activity_main_never_ask_permission_msg">You have permanently denied access to location on your device</string>
-    <string name="activity_main_img_perm_status_content_desc">Permission is granted or not</string>
-
     <!-- Services -->
     <string name="gps_location_service_notification_name">GpsApp is using GPS</string>
     <string name="gps_location_service_notification_text">GpsApp is listening to your location moves…</string>
@@ -38,8 +33,10 @@
     <string name="gps_location_service_notification_cancel">Cancel</string>
 
     <!-- Current Speed Fragment -->
+    <string name="fragment_current_speed_img_content_desc">app logo</string>
+    <string name="fragment_current_speed_speed_text">%1$d km/h</string>
     <string name="fragment_current_speed_section_title">Last location information</string>
-    <string name="fragment_current_speed_id_timestamp_speed">id: %1$d / Timestamp: %2$d / Speed: %3$.2f</string>
+    <string name="fragment_current_speed_id_timestamp_speed">id: %1$d / Timestamp: %2$d</string>
     <string name="fragment_current_speed_lat_lng">Lat: %1$f / Lng: %2$f</string>
 
     <!-- Average Speed Fragment -->

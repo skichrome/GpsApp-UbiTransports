@@ -7,6 +7,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/fragment_average_speed_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:contentDescription="@string/fragment_current_speed_img_content_desc"
+        android:src="@mipmap/ic_launcher_foreground"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_average_speed_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_average_speed_guideline" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/fragment_average_speed_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+
     <TextView
         android:id="@+id/fragment_average_speed_average_title"
         style="@style/TextAppearance.AppCompat.Title"
@@ -19,8 +38,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_average_speed_img"
+        app:layout_constraintVertical_bias="0.1" />
 
     <TextView
         android:id="@+id/fragment_average_speed_speed_value"

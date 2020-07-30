@@ -7,37 +7,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/fragment_current_speed_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:contentDescription="@string/fragment_current_speed_img_content_desc"
+        android:src="@mipmap/ic_launcher_foreground"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_current_speed_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_current_speed_guideline" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/fragment_current_speed_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+
     <View
         android:id="@+id/fragment_current_speed_indicator"
         android:layout_width="10dp"
         android:layout_height="60dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="64dp"
         android:layout_marginEnd="16dp"
         android:background="@color/secondaryColor"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_current_speed_img" />
+
+    <TextView
+        android:id="@+id/fragment_current_speed_speed_text"
+        style="@style/GpsApp.Theme.Title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_current_speed_indicator"
+        tools:text="XX km/h" />
 
     <TextView
         android:id="@+id/fragment_current_speed_section_title"
         style="@style/GpsApp.Theme.Title"
         android:text="@string/fragment_current_speed_section_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_current_speed_indicator" />
+        app:layout_constraintBottom_toTopOf="@+id/fragment_current_speed_id_timestamp_speed"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/fragment_current_speed_id_timestamp_speed"
         style="@style/GpsApp.Theme.body1"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_current_speed_lat_lng"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_current_speed_section_title"
-        tools:text="id / Timestamp / XX km/h" />
+        tools:text="id / Timestamp" />
 
     <TextView
         android:id="@+id/fragment_current_speed_lat_lng"
         style="@style/GpsApp.Theme.body1"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragment_current_speed_id_timestamp_speed"
         tools:text="LATITUDE / LONGITUDE" />
 </androidx.constraintlayout.widget.ConstraintLayout>
