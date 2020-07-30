@@ -18,6 +18,7 @@ import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -236,7 +237,7 @@ public class GpsLocationService extends Service
                 .setContentTitle(getString(R.string.gps_location_service_notification_name))
                 .setOngoing(true)
                 .setNotificationSilent()
-                .setPriority(Notification.PRIORITY_HIGH)
+                .setPriority(NotificationManagerCompat.IMPORTANCE_HIGH)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker(getString(R.string.gps_location_service_notification_name))
                 .setWhen(System.currentTimeMillis());
