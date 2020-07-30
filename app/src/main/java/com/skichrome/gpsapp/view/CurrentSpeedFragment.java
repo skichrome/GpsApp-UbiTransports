@@ -66,6 +66,7 @@ public class CurrentSpeedFragment extends Fragment
 
             handleLocationResult(locations);
         });
+
         viewModelLazy.getValue().getStopped().observe(getViewLifecycleOwner(), isStopped ->
         {
             if (isStopped)

@@ -28,6 +28,7 @@ public class AverageSpeedFragment extends Fragment
 
     private FragmentAverageSpeedBinding binding;
     private Lazy<AverageSpeedFragmentViewModel> viewModelLazy = inject(AverageSpeedFragmentViewModel.class);
+    private boolean averageComputed = false;
 
     // =================================
     //        Superclass Methods
@@ -73,9 +74,13 @@ public class AverageSpeedFragment extends Fragment
             if (locationList == null || locationList.isEmpty())
                 return;
 
-            binding.fragmentAverageSpeedLocationCount.setText(getString(R.string.fragment_average_speed_points_number, locationList.size()));
-            ExtensionsKt.shortToast(requireActivity(), "Avg: " + locationList.get(locationList.size() - 1).getSpeed());
+            if (!averageComputed)
+            {
+                binding.fragmentAverageSpeedLocationCount.setText(getString(R.string.fragment_average_speed_points_number, locationList.size()));
+                averageComputed = true;
+            }
         });
+
         viewModelLazy.getValue().getIsInMovement().observe(getViewLifecycleOwner(), isInMovement ->
         {
             if (isInMovement)
@@ -84,11 +89,10 @@ public class AverageSpeedFragment extends Fragment
                 Navigation.findNavController(binding.getRoot()).navigateUp();
             }
         });
-        viewModelLazy.getValue().getMovementCount().observe(getViewLifecycleOwner(), movCount -> ExtensionsKt.shortToast(requireActivity(), getString(R.string.average_speed_view_model_movement_count_msg, movCount)));
+
+        viewModelLazy.getValue().getMovementCount().observe(getViewLifecycleOwner(), movCount ->
+                ExtensionsKt.shortToast(requireActivity(), getString(R.string.average_speed_view_model_movement_count_msg, movCount)));
         viewModelLazy.getValue().getAverage().observe(getViewLifecycleOwner(), average ->
-        {
-            binding.fragmentAverageSpeedSpeedValue.setText(getString(R.string.fragment_average_speed_speed_value, average));
-            ExtensionsKt.shortToast(requireActivity(), "Average computed : " + average);
-        });
+                binding.fragmentAverageSpeedSpeedValue.setText(getString(R.string.fragment_average_speed_speed_value, average)));
     }
 }

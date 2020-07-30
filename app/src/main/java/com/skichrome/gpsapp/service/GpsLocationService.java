@@ -45,20 +45,23 @@ public class GpsLocationService extends Service
     private static final String TAG = GpsLocationService.class.getSimpleName();
     private static final String PACKAGE_NAME = "com.skichrome.gpsapp.services";
     private static final String CHANNEL_ID = "channel_location_01";
-    private static final int NOTIFICATION_ID = 123;
     private static final String EXTRA_STARTED_FROM_NOTIFICATION = PACKAGE_NAME + ".started_from_notification";
+
+    // --- Notification
+    private static final int NOTIFICATION_ID = 123;
     // --- Location
     private static final int UPDATE_INTERVAL_MILLIS = 1000;
-    private static final int FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL_MILLIS / 2;
-    private final IBinder binder = new LocalBinder();
-    private NotificationManager notificationManager;
     private boolean isConfigurationChanged = false;
     private Handler serviceHandler;
+    private static final int FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL_MILLIS / 2;
+    // --- Service
+    private final IBinder binder = new LocalBinder();
+    private Lazy<GpsLocationServiceViewModel> viewModelLazy = inject(GpsLocationServiceViewModel.class);
+    private NotificationManager notificationManager;
+
     private LocationRequest request;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
-
-    private Lazy<GpsLocationServiceViewModel> viewModelLazy = inject(GpsLocationServiceViewModel.class);
 
     public GpsLocationService()
     {

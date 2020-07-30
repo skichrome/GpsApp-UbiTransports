@@ -1,7 +1,5 @@
 package com.skichrome.gpsapp.viewmodel;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
@@ -63,11 +61,11 @@ public class CurrentSpeedFragmentViewModel extends ViewModel
             // Counter to test if the vehicle is stationary (it must be at least a number of location speed near zero to consider a stop
             int stopCount = 0;
             List<RoomLocation> lastLocations = locationList.subList(locationList.size() - 5, locationList.size());
+
             for (RoomLocation lastLocation : lastLocations)
             {
                 if (Math.round(lastLocation.getSpeed()) <= 2)
                     stopCount++;
-                Log.e("searchIfStopped", "stopCount: " + stopCount);
             }
             if (stopCount >= 2)
                 isStopped.setValue(true);

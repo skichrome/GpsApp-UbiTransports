@@ -56,15 +56,11 @@ public class AverageSpeedFragmentViewModel extends ViewModel
     {
         if (locations == null)
         {
-            Log.d(TAG, "GetLocations : location null");
             locations = Transformations.map(readRepository.observeLocations(), locations ->
             {
-                Log.d(TAG, "GetLocations " + locations.isEmpty());
-
                 if (locations.isEmpty())
-                {
                     return locations;
-                }
+
                 if (needToComputeAverage)
                 {
                     computeAverage(locations);
@@ -102,18 +98,21 @@ public class AverageSpeedFragmentViewModel extends ViewModel
     @NotNull
     private List<RoomLocation> searchIfMovement(List<RoomLocation> locationList)
     {
+        // Check list size, it must be sufficient
         if (locationList.size() > 5)
         {
+            // Counter to test if the vehicle is in movement (it must be at least a number of location speed over zero to consider a movement
             int movementCount = 0;
             List<RoomLocation> lastLocations = locationList.subList(locationList.size() - 5, locationList.size());
+
             for (RoomLocation lastLocation : lastLocations)
             {
                 if (Math.round(lastLocation.getSpeed()) >= 5)
                     movementCount++;
-                Log.e("searchIfMovement", "movementCount: " + movementCount + " / speed: " + Math.round(lastLocation.getSpeed()) + " / id: " + lastLocation.getId());
             }
             if (movementCount >= 5)
                 resetLocation();
+
             this.movementCount.setValue(movementCount);
         }
         return locationList;
